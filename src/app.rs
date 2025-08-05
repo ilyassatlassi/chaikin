@@ -24,6 +24,8 @@ pub struct AppState {
     message: Message,
     creat_line: bool,
     restart: Rect,
+    last_update_time: f64,
+    chaikin_runs: u32,
 }
 
 impl AppState {
@@ -40,6 +42,8 @@ impl AppState {
             },
             creat_line: false,
             restart: Rect::new(20.0, 60.0, 100.0, 40.0),
+            last_update_time: 0.0,
+            chaikin_runs: 0,
         }
     }
 
@@ -86,17 +90,33 @@ impl AppState {
             show: false,
         };
         self.creat_line = false;
+        self.last_update_time = 0.0;
+        self.chaikin_runs = 0;
+    }
+    fn chaikin_algorithm(&mut self) {
+        if self.points.len() < 2 {
+            return;
+        }
+
+        let mut new_points = Vec::new();
+        new_points.push(self.points[0]);
+
+        for i in 0..self.points.len() - 1 {
+            let p0 = self.points[i];
+            let p1 = self.points[i + 1];
+
+            let q = p0 * 0.75 + p1 * 0.25;
+            let r = p0 * 0.25 + p1 * 0.75;
+
+            new_points.push(q);
+            new_points.push(r);
+        }
+
+        new_points.push(*self.points.last().unwrap());
+        self.points = new_points;
     }
 
     pub fn check_update(&mut self) {
-        // Update message
-        // if let Some(msg) = &mut self.message {
-        //     msg.update();
-        //     if !msg.is_active() {
-        //         self.message = None;
-        //     }
-        // }
-
         if is_mouse_button_pressed(MouseButton::Left) {
             let mouse_pos = Vec2::from(mouse_position());
 
@@ -118,6 +138,7 @@ impl AppState {
                 self.creat_line = true;
                 self.is_enter = true;
                 self.step = 0;
+                // self.last_update_time = macroquad::time::get_time();
                 // self.original_points = self.points.clone();
             } else if self.original_points.len() < 2 {
                 self.message.text = "You need to select two Points.".to_string();
@@ -127,6 +148,23 @@ impl AppState {
 
         if is_key_pressed(KeyCode::Space) || is_key_pressed(KeyCode::Escape) {
             std::process::exit(0);
+        }
+
+        let now = macroquad::time::get_time();
+
+        if self.is_enter && self.chaikin_runs < 7 && now - self.last_update_time >= 1.0 {
+            self.chaikin_algorithm();
+            self.last_update_time = now;
+            self.chaikin_runs += 1;
+            self.message.text = "drawing".to_string();
+            self.message.show = true;
+        } else if self.chaikin_runs >= 7 {
+            // self.is_enter = true;
+            self.last_update_time = now;
+
+            self.chaikin_runs = 0;
+            self.points = self.original_points.clone();
+            // self.message.text = "Done!".to_string();
         }
     }
 }
