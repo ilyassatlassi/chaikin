@@ -138,8 +138,9 @@ impl AppState {
                 self.creat_line = true;
                 self.is_enter = true;
                 self.step = 0;
-                // self.last_update_time = macroquad::time::get_time();
+                self.last_update_time = macroquad::time::get_time();
                 // self.original_points = self.points.clone();
+                // return;
             } else if self.original_points.len() < 2 {
                 self.message.text = "You need to select two Points.".to_string();
                 self.message.show = true;
