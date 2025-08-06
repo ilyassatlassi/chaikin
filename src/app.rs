@@ -156,12 +156,12 @@ impl AppState {
             self.chaikin_algorithm();
             self.last_update_time = now;
             self.chaikin_runs += 1;
-            self.message.text = "drawing".to_string();
+            self.message.text = "Drawing...".to_string();
+            self.message.color = GREEN;
             self.message.show = true;
         } else if self.chaikin_runs >= 7 {
             // self.is_enter = true;
-            self.last_update_time = now;
-
+            // self.last_update_time = now;
             self.chaikin_runs = 0;
             self.points = self.original_points.clone();
             // self.message.text = "Done!".to_string();
