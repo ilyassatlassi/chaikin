@@ -6,17 +6,8 @@ pub struct Message {
     pub show: bool,
 }
 
-// impl Message {
-//     pub fn new(text: &str, color: Color, duration: i32) -> Self {
-//         Self {
-//             text: text.to_string(),
-//             color,
-//             counter: duration,
-//         }
-//     }
-// }
+
 pub struct AppState {
-    // circles: Vec<Vec2>,
     points: Vec<Vec2>,
     original_points: Vec<Vec2>,
     is_enter: bool,
@@ -139,8 +130,7 @@ impl AppState {
                 self.is_enter = true;
                 self.step = 0;
                 self.last_update_time = macroquad::time::get_time();
-                // self.original_points = self.points.clone();
-                // return;
+              
             } else if self.original_points.len() < 2 {
                 self.message.text = "You need to select two Points.".to_string();
                 self.message.show = true;
@@ -161,11 +151,8 @@ impl AppState {
             self.message.color = GREEN;
             self.message.show = true;
         } else if self.chaikin_runs >= 7 {
-            // self.is_enter = true;
-            // self.last_update_time = now;
             self.chaikin_runs = 0;
             self.points = self.original_points.clone();
-            // self.message.text = "Done!".to_string();
         }
     }
 }
